@@ -10,7 +10,7 @@ class CryptoService {
   List _cryptos;
   List get cryptos => _cryptos;
 
-  Future<List> fetchCoins() async {
+  Future fetchCoins() async {
     _cryptos = await _api.fetchCoins();
   }
 }

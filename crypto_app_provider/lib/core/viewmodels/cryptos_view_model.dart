@@ -7,10 +7,21 @@ class CryptoViewModel extends BaseModel {
   CryptoService _cryptoService = locator<CryptoService>();
 
   List get cryptos => _cryptoService.cryptos;
+  final saved = Set<Map>();
 
   Future fetchCoins() async {
-    setState(ViewState.Loading);
+    cryptos != null ?? setState(ViewState.Loading);
     await _cryptoService.fetchCoins();
-    setState(ViewState.Loaded);
+    setState(cryptos.length > 0 ? ViewState.Loaded :  ViewState.Empty);
+  }
+
+  void addCryptoToFav(Map item) {
+    saved.add(item);
+    notifyListeners();
+  }
+
+  void removeCryptoFromFav(Map item) {
+    saved.remove(item);
+    notifyListeners();
   }
 }

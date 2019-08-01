@@ -4,7 +4,14 @@ import '../../core/enums/viewstate.dart';
 import '../../ui/views/base_view.dart';
 import '../../core/viewmodels/cryptos_view_model.dart';
 
-class CryptoListView extends StatelessWidget {
+class CryptoListView extends StatefulWidget {
+  CryptoListView({Key key}) : super(key: key);
+
+  @override
+  CryptoListViewState createState() => CryptoListViewState();
+}
+
+class CryptoListViewState extends State<CryptoListView> {
   final List<MaterialColor> _colors = [
     //to show different colors for different cryptos
     Colors.blue,
@@ -13,11 +20,15 @@ class CryptoListView extends StatelessWidget {
     Colors.teal,
     Colors.cyan
   ];
+  CryptoViewModel _model;
 
   @override
   Widget build(BuildContext context) {
     return BaseView<CryptoViewModel>(
-      onModelReady: (model) => model.fetchCoins(),
+      onModelReady: (model) {
+        _model = model;
+        model.fetchCoins();
+      },
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: Text('Crypto List'),
@@ -31,15 +42,25 @@ class CryptoListView extends StatelessWidget {
             )
           ],
         ),
-        body: model.state == ViewState.Loading
-            ? Center(child: CircularProgressIndicator())
-            : _buildCryptoList(model.cryptos),
+        body: _buildMainBody(model),
       ),
     );
   }
 
-  Widget _buildBody() {
-    
+  Widget _buildMainBody(CryptoViewModel model) {
+    if (model.state == ViewState.Loading) {
+      return Center(child: CircularProgressIndicator());
+    } else if (model.state == ViewState.Loaded) {
+      return RefreshIndicator(
+        child: _buildCryptoList(model.cryptos),
+        onRefresh: model.fetchCoins,
+      );
+    } else if (model.state == ViewState.Empty) {
+      return Center(child: Text('Empty'));
+    } else if (model.state == ViewState.Error) {
+      return Center(child: Text('Error'));
+    }
+    return null;
   }
 
   Widget _buildCryptoList(List cryptos) {
@@ -61,6 +82,17 @@ class CryptoListView extends StatelessWidget {
   }
 
   Widget _buildRow(Map crypto, MaterialColor color) {
+    final bool favourited = _model.saved.contains(crypto);
+
+    void _fav() {
+      if (favourited) {
+        //if it is favourited previously, remove it from the list
+        _model.removeCryptoFromFav(crypto);
+      } else {
+        _model.addCryptoToFav(crypto); //else add it to the array
+      }
+    }
+
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: color,
@@ -72,9 +104,9 @@ class CryptoListView extends StatelessWidget {
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       trailing: IconButton(
-        icon: Icon(Icons.favorite_border),
+        icon: Icon(favourited ? Icons.favorite : Icons.favorite_border),
         color: Colors.red,
-        onPressed: () {},
+        onPressed: _fav,
       ),
     );
   }

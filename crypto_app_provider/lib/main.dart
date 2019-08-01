@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:core';
-import './ui/views/cryto_view.dart';
 import './ui/router.dart';
 import 'locator.dart';
 
