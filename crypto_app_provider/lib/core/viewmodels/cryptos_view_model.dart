@@ -12,11 +12,16 @@ class CryptoViewModel extends BaseModel {
   Future fetchCoins() async {
     cryptos != null ?? setState(ViewState.Loading);
     await _cryptoService.fetchCoins();
-    setState(cryptos.length > 0 ? ViewState.Loaded :  ViewState.Empty);
+    setState(cryptos.length > 0 ? ViewState.Loaded : ViewState.Empty);
   }
 
   void addCryptoToFav(Map item) {
     saved.add(item);
+    notifyListeners();
+  }
+
+  void addCryptosToFav(Set<Map> items) {
+    saved.addAll(items);
     notifyListeners();
   }
 

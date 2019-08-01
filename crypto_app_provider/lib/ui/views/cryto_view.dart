@@ -36,9 +36,7 @@ class CryptoListViewState extends State<CryptoListView> {
             IconButton(
               icon: Icon(Icons.list),
               highlightColor: Colors.white,
-              onPressed: () {
-                _pushSaved(context);
-              },
+              onPressed: () => _pushSaved(context),
             )
           ],
         ),
@@ -82,6 +80,16 @@ class CryptoListViewState extends State<CryptoListView> {
   }
 
   Widget _buildRow(Map crypto, MaterialColor color) {
+    // Get index matching with saved item
+    // And restore the saved
+    // To keep the index after refresh
+    final saved = Set<Map>.from(_model.saved
+        .map(
+            (saved) => _model.cryptos.indexWhere((l) => l['id'] == saved['id']))
+        .map((index) => _model.cryptos[index]));
+    _model.saved.clear(); // Clear saved item
+    _model.saved.addAll(saved);
+
     final bool favourited = _model.saved.contains(crypto);
 
     void _fav() {
