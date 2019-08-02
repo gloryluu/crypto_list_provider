@@ -31,7 +31,10 @@ class _TabbarViewState extends State<TabbarView> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: PageView(
-          children: <Widget>[CryptoListView(), FavoriteCryptoListView(title: 'Fav List')],
+          children: <Widget>[
+            CryptoListView(),
+            FavoriteCryptoListView(title: 'Fav List')
+          ],
           onPageChanged: onPageChanged,
           controller: _pageController,
         ),

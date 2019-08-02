@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:crypto_app_provider/core/models/fav_crypto_model.dart';
 import 'package:crypto_app_provider/core/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,10 @@ class CryptoListView extends StatefulWidget {
 }
 
 class CryptoListViewState extends State<CryptoListView>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
+  TextEditingController _searchQuery;
   CryptoViewModel _model;
 
   @override
@@ -27,7 +32,15 @@ class CryptoListViewState extends State<CryptoListView>
   }
 
   @override
+  void initState() {
+    super.initState();
+    print('This should only be called once.');
+    _searchQuery = TextEditingController();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BaseView<CryptoViewModel>(
       onModelReady: (model) {
         _model = model;
@@ -35,14 +48,10 @@ class CryptoListViewState extends State<CryptoListView>
       },
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
-          title: Text('Crypto List'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.list),
-              highlightColor: Colors.white,
-              onPressed: () => _pushSaved(context),
-            )
-          ],
+          leading: _model.isSearching ? const BackButton() : null,
+          title:
+              _model.isSearching ? _buildSearchField() : _buildTitle(context),
+          actions: _buildActions(),
         ),
         body: _buildMainBody(model),
       ),
@@ -54,7 +63,8 @@ class CryptoListViewState extends State<CryptoListView>
       return Center(child: CircularProgressIndicator());
     } else if (model.state == ViewState.Loaded) {
       return RefreshIndicator(
-        child: _buildCryptoList(model.cryptos),
+        child: _buildCryptoList(
+            _model.isSearching ? _model.searchResult : _model.cryptos),
         onRefresh: model.fetchCoins,
       );
     } else if (model.state == ViewState.Empty) {
@@ -129,7 +139,88 @@ class CryptoListViewState extends State<CryptoListView>
     );
   }
 
-  _pushSaved(BuildContext context) {
+  void _pushSaved(BuildContext context) {
     Navigator.pushNamed(context, 'fav');
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    var horizontalTitleAlignment =
+        Platform.isIOS ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+
+    return new InkWell(
+      onTap: () => scaffoldKey.currentState.openDrawer(),
+      child: new Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: horizontalTitleAlignment,
+          children: <Widget>[
+            const Text('Seach box'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchField() {
+    return new TextField(
+      controller: _searchQuery,
+      autofocus: true,
+      decoration: const InputDecoration(
+        hintText: 'Search...',
+        border: InputBorder.none,
+        hintStyle: const TextStyle(color: Colors.white30),
+      ),
+      style: const TextStyle(color: Colors.white, fontSize: 16.0),
+      onChanged: updateSearchQuery,
+    );
+  }
+
+  List<Widget> _buildActions() {
+    if (_model.isSearching) {
+      return <Widget>[
+        new IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            if (_searchQuery == null || _searchQuery.text.isEmpty) {
+              Navigator.pop(context);
+              return;
+            }
+            _clearSearchQuery();
+          },
+        ),
+      ];
+    }
+
+    return <Widget>[
+      new IconButton(
+        icon: const Icon(Icons.search),
+        onPressed: _startSearch,
+      ),
+    ];
+  }
+
+  void _startSearch() {
+    print("open search box");
+    ModalRoute.of(context)
+        .addLocalHistoryEntry(LocalHistoryEntry(onRemove: _stopSearching));
+
+    _model.setSearching(true);
+  }
+
+  void _stopSearching() {
+    _clearSearchQuery();
+    _model.setSearching(false);
+  }
+
+  void _clearSearchQuery() {
+    print("close search box");
+    _searchQuery.clear();
+    updateSearchQuery("Search query");
+  }
+
+  void updateSearchQuery(String newQuery) {
+    print("search query " + newQuery);
+    _model.filterCoins(newQuery);
   }
 }
