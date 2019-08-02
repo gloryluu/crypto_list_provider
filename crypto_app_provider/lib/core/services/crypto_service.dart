@@ -13,4 +13,8 @@ class CryptoService {
   Future fetchCoins() async {
     _cryptos = await _api.fetchCoins();
   }
+
+  Future fetchCoinById(String id) async {
+    _cryptos = await _api.fetchCoinById(id);
+  }
 }

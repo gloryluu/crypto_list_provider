@@ -9,8 +9,13 @@ class Api {
   var client = new http.Client();
 
   Future fetchCoins() async {
-    // Get user profile for id
     var response = await client.get('$endpoint/ticker/');
+
+    return json.decode(response.body);
+  }
+
+    Future fetchCoinById(String id) async {
+    var response = await client.get('$endpoint/ticker/$id');
 
     return json.decode(response.body);
   }
