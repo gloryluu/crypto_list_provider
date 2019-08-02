@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:core';
 import 'locator.dart';
 import 'ui/router.dart';
-import 'ui/shared/theme.dart';
+import 'ui/shared/app_theme.dart';
 
 void main() {
   setupLocator();
