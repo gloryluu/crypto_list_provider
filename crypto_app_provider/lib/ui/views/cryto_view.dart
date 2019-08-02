@@ -14,8 +14,17 @@ class CryptoListView extends StatefulWidget {
   CryptoListViewState createState() => CryptoListViewState();
 }
 
-class CryptoListViewState extends State<CryptoListView> {
+class CryptoListViewState extends State<CryptoListView>
+    with AutomaticKeepAliveClientMixin {
   CryptoViewModel _model;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
