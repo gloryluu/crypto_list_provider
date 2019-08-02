@@ -1,6 +1,7 @@
 # crypto_list_provider
 
-This project purpose is to demo how to integrate [Provider state management](https://pub.dev/packages/provider) into a basic project.
+This project main purpose is to demo how to integrate [Provider state management](https://pub.dev/packages/provider) into a basic project. 
+User can get sort of most famous token info and save his favorite one.
 * Loading/ Parsing json
 * Refresh 
 * Tabbar
