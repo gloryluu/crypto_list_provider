@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
-class FavoriteCryptoListPage extends StatelessWidget {
-  FavoriteCryptoListPage({Key key, this.title}) : super(key: key);
+class FavoriteCryptoListView extends StatelessWidget {
+  FavoriteCryptoListView({Key key, this.title}) : super(key: key);
 
   final String title;
 

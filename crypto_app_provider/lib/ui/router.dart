@@ -11,7 +11,7 @@ class Router {
       case '/':
         return MaterialPageRoute(builder: (_) => CryptoListView());
       case 'fav':
-        return MaterialPageRoute(builder: (_) => FavoriteCryptoListPage(title: 'Fav List',));
+        return MaterialPageRoute(builder: (_) => FavoriteCryptoListView(title: 'Fav List',));
       default:
         return MaterialPageRoute(
             builder: (_) => Scaffold(
