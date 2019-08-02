@@ -1,4 +1,7 @@
+import 'package:crypto_app_provider/core/models/fav_crypto_model.dart';
+import 'package:crypto_app_provider/core/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:math';
 import '../../core/enums/viewstate.dart';
 import '../../ui/views/base_view.dart';
@@ -12,14 +15,6 @@ class CryptoListView extends StatefulWidget {
 }
 
 class CryptoListViewState extends State<CryptoListView> {
-  final List<MaterialColor> _colors = [
-    //to show different colors for different cryptos
-    Colors.blue,
-    Colors.indigo,
-    Colors.lime,
-    Colors.teal,
-    Colors.cyan
-  ];
   CryptoViewModel _model;
 
   @override
@@ -66,7 +61,7 @@ class CryptoListViewState extends State<CryptoListView> {
       padding: const EdgeInsets.all(16.0),
       itemCount: cryptos.length,
       itemBuilder: (context, index) {
-        final MaterialColor color = _colors[index % _colors.length];
+        final MaterialColor color = colors[index % colors.length];
         return _buildRow(cryptos[index], color);
       },
     );
@@ -83,21 +78,27 @@ class CryptoListViewState extends State<CryptoListView> {
     // Get index matching with saved item
     // And restore the saved
     // To keep the index after refresh
-    final saved = Set<Map>.from(_model.saved
+    final saved = Set<Map>.from(Provider.of<FavouriteCryptoListModel>(context)
+        .saved
         .map(
             (saved) => _model.cryptos.indexWhere((l) => l['id'] == saved['id']))
         .map((index) => _model.cryptos[index]));
-    _model.saved.clear(); // Clear saved item
-    _model.saved.addAll(saved);
+    Provider.of<FavouriteCryptoListModel>(context)
+        .saved
+        .clear(); // Clear saved item
+    Provider.of<FavouriteCryptoListModel>(context).saved.addAll(saved);
 
-    final bool favourited = _model.saved.contains(crypto);
+    final bool favourited =
+        Provider.of<FavouriteCryptoListModel>(context).saved.contains(crypto);
 
     void _fav() {
       if (favourited) {
         //if it is favourited previously, remove it from the list
-        _model.removeCryptoFromFav(crypto);
+        // _model.removeCryptoFromFav(crypto);
+        Provider.of<FavouriteCryptoListModel>(context).remove(crypto);
       } else {
-        _model.addCryptoToFav(crypto); //else add it to the array
+        Provider.of<FavouriteCryptoListModel>(context)
+            .addItem(crypto); //else add it to the array
       }
     }
 
