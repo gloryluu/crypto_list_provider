@@ -1,3 +1,4 @@
+import 'package:crypto_app_provider/core/enums/connectivity_status.dart';
 import 'package:flutter/material.dart';
 import '../../core/viewmodels/base_model.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,10 @@ class _BaseViewState<T extends BaseModel> extends State<BaseView<T>> {
 
   @override
   Widget build(BuildContext context) {
+    var connectionStatus = Provider.of<ConnectivityStatus>(context);
+    if (connectionStatus == ConnectivityStatus.WiFi) {}
+    if (connectionStatus == ConnectivityStatus.Cellular) {}
+
     return ChangeNotifierProvider<T>(
         builder: (context) => model,
         child: Consumer<T>(builder: widget.builder));
