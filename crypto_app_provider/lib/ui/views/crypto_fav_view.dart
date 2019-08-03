@@ -1,8 +1,10 @@
-import 'package:crypto_app_provider/core/models/fav_crypto_model.dart';
-import 'package:crypto_app_provider/core/utils/constants.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crypto_app_provider/core/models/crypto_model.dart';
+import 'package:crypto_app_provider/core/models/fav_crypto_model.dart';
+import 'package:crypto_app_provider/core/utils/constants.dart';
 
 class FavoriteCryptoListView extends StatelessWidget {
   FavoriteCryptoListView({Key key, this.title}) : super(key: key);
@@ -30,16 +32,16 @@ class FavoriteCryptoListView extends StatelessWidget {
     );
   }
 
-  String _cryptoPrice(Map crypto) {
+  String _cryptoPrice(Crypto item) {
     int decimals = 2;
     int fac = pow(10, decimals);
-    double d = double.parse(crypto['price_usd']);
+    double d = item.marketData.currentPrice['usd'];
     return "\$" + (d = (d * fac).round() / fac).toString();
   }
 
-  Widget _buildRow(BuildContext context, Map crypto, MaterialColor color) {
+  Widget _buildRow(BuildContext context, Crypto item, MaterialColor color) {
     void _fav() {
-      Provider.of<FavouriteCryptoListModel>(context).remove(crypto);
+      Provider.of<FavouriteCryptoListModel>(context).remove(item);
     }
 
     Future<void> _showAlert(BuildContext context) {
@@ -70,13 +72,16 @@ class FavoriteCryptoListView extends StatelessWidget {
     }
 
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: color,
-        child: Text(crypto['name'][0]),
+      leading: CachedNetworkImage(
+        imageUrl: item.image.small,
+        placeholder: (context, _) => CircleAvatar(
+          backgroundColor: color,
+          child: Text(item.name[0]),
+        ),
       ),
-      title: Text(crypto['name']),
+      title: Text(item.name),
       subtitle: Text(
-        _cryptoPrice(crypto),
+        _cryptoPrice(item),
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       trailing: IconButton(

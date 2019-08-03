@@ -1,13 +1,14 @@
 import 'dart:io';
-
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import 'package:crypto_app_provider/core/models/crypto_model.dart';
 import 'package:crypto_app_provider/core/models/fav_crypto_model.dart';
 import 'package:crypto_app_provider/core/utils/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'dart:math';
-import '../../core/enums/viewstate.dart';
-import '../../ui/views/base_view.dart';
-import '../../core/viewmodels/cryptos_view_model.dart';
+import 'package:crypto_app_provider/core/enums/viewstate.dart';
+import 'package:crypto_app_provider/ui/views/base_view.dart';
+import 'package:crypto_app_provider/core/viewmodels/cryptos_view_model.dart';
 
 class CryptoListView extends StatefulWidget {
   CryptoListView({Key key}) : super(key: key);
@@ -87,49 +88,52 @@ class CryptoListViewState extends State<CryptoListView>
     );
   }
 
-  String _cryptoPrice(Map crypto) {
+  String _cryptoPrice(Crypto item) {
     int decimals = 2;
     int fac = pow(10, decimals);
-    double d = double.parse(crypto['price_usd']);
+    double d = item.marketData.currentPrice['usd'];
     return "\$" + (d = (d * fac).round() / fac).toString();
   }
 
-  Widget _buildRow(Map crypto, MaterialColor color) {
+  Widget _buildRow(Crypto item, MaterialColor color) {
     // Get index matching with saved item
     // And restore the saved
     // To keep the index after refresh
-    final saved = Set<Map>.from(Provider.of<FavouriteCryptoListModel>(context)
-        .saved
-        .map(
-            (saved) => _model.cryptos.indexWhere((l) => l['id'] == saved['id']))
-        .map((index) => _model.cryptos[index]));
+    final saved = Set<Crypto>.from(
+        Provider.of<FavouriteCryptoListModel>(context)
+            .saved
+            .map((saved) => _model.cryptos.indexWhere((l) => l.id == saved.id))
+            .map((index) => _model.cryptos[index]));
     Provider.of<FavouriteCryptoListModel>(context)
         .saved
         .clear(); // Clear saved item
     Provider.of<FavouriteCryptoListModel>(context).saved.addAll(saved);
 
     final bool favourited =
-        Provider.of<FavouriteCryptoListModel>(context).saved.contains(crypto);
+        Provider.of<FavouriteCryptoListModel>(context).saved.contains(item);
 
     void _fav() {
       if (favourited) {
         //if it is favourited previously, remove it from the list
         // _model.removeCryptoFromFav(crypto);
-        Provider.of<FavouriteCryptoListModel>(context).remove(crypto);
+        Provider.of<FavouriteCryptoListModel>(context).remove(item);
       } else {
         Provider.of<FavouriteCryptoListModel>(context)
-            .addItem(crypto); //else add it to the array
+            .addItem(item); //else add it to the array
       }
     }
 
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: color,
-        child: Text(crypto['name'][0]),
+      leading: CachedNetworkImage(
+        imageUrl: item.image.small,
+        placeholder: (context, _) => CircleAvatar(
+          backgroundColor: color,
+          child: Text(item.name[0]),
+        ),
       ),
-      title: Text(crypto['name']),
+      title: Text(item.name),
       subtitle: Text(
-        _cryptoPrice(crypto),
+        _cryptoPrice(item),
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       trailing: IconButton(

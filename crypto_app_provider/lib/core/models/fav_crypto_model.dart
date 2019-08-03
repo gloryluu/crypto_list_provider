@@ -1,19 +1,20 @@
+import 'package:crypto_app_provider/core/models/crypto_model.dart';
 import 'package:flutter/widgets.dart';
 
 class FavouriteCryptoListModel extends ChangeNotifier {
-  final saved = Set<Map>();
+  final saved = Set<Crypto>();
 
-  void addItem(Map item) {
+  void addItem(Crypto item) {
     saved.add(item);
     notifyListeners();
   }
 
-  void addItems(Set<Map> items) {
+  void addItems(Set<Crypto> items) {
     saved.addAll(items);
     notifyListeners();
   }
 
-  void remove(Map item) {
+  void remove(Crypto item) {
     saved.remove(item);
     notifyListeners();
   }
