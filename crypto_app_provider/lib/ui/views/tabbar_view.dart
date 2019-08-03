@@ -1,5 +1,6 @@
 import 'package:crypto_app_provider/ui/views/crypto_fav_view.dart';
 import 'package:crypto_app_provider/ui/views/cryto_view.dart';
+import 'package:crypto_app_provider/ui/views/setting_view.dart';
 import 'package:flutter/material.dart';
 
 class TabbarView extends StatefulWidget {
@@ -12,31 +13,25 @@ class TabbarView extends StatefulWidget {
 }
 
 class _TabbarViewState extends State<TabbarView> {
-  PageController _pageController;
-  int _page = 0;
+  int _selectedIndex = 0;
+  static List<Widget> _screens = <Widget>[
+    CryptoListView(),
+    FavoriteCryptoListView(title: 'Fav List'),
+    SettingView()
+  ];
 
-  @override
-  void initState() {
-    _pageController = PageController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: PageView(
-          children: <Widget>[
-            CryptoListView(),
-            FavoriteCryptoListView(title: 'Fav List')
-          ],
-          onPageChanged: onPageChanged,
-          controller: _pageController,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
         ),
         bottomNavigationBar: Theme(
           data: Theme.of(context).copyWith(
@@ -62,21 +57,20 @@ class _TabbarViewState extends State<TabbarView> {
                       style: TextStyle(
                         color: const Color(0xFFFFFFFF),
                       ))),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.settings,
+                    color: const Color(0xFFFFFFFF),
+                  ),
+                  title: Text('Setting',
+                      style: TextStyle(
+                        color: const Color(0xFFFFFFFF),
+                      ))),
             ],
-            onTap: navigationTapped,
-            currentIndex: _page,
+            currentIndex: _selectedIndex,
+            //selectedItemColor: Colors.amber[800], // Change selected item color
+            onTap: _onItemTapped,
           ),
         ));
-  }
-
-  void navigationTapped(int page) {
-    _pageController.animateToPage(page,
-        duration: const Duration(milliseconds: 300), curve: Curves.ease);
-  }
-
-  void onPageChanged(int page) {
-    setState(() {
-      this._page = page;
-    });
   }
 }

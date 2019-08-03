@@ -47,6 +47,7 @@ class CryptoListViewState extends State<CryptoListView>
         model.fetchCoins();
       },
       builder: (context, model, child) => Scaffold(
+        key: scaffoldKey,
         appBar: AppBar(
           leading: _model.isSearching ? const BackButton() : null,
           title:
@@ -139,7 +140,7 @@ class CryptoListViewState extends State<CryptoListView>
     );
   }
 
-  void _pushSaved(BuildContext context) {
+  void _onItemTapped(BuildContext context) {
     Navigator.pushNamed(context, 'fav');
   }
 
@@ -155,7 +156,7 @@ class CryptoListViewState extends State<CryptoListView>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: horizontalTitleAlignment,
           children: <Widget>[
-            const Text('Seach box'),
+            const Text('Crypto List'),
           ],
         ),
       ),
