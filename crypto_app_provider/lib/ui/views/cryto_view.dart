@@ -141,11 +141,12 @@ class CryptoListViewState extends State<CryptoListView>
         color: Colors.red,
         onPressed: _fav,
       ),
+      onTap:()=> _onItemTapped(context),
     );
   }
 
   void _onItemTapped(BuildContext context) {
-    Navigator.pushNamed(context, 'fav');
+    Navigator.pushNamed(context, 'detail');
   }
 
   Widget _buildTitle(BuildContext context) {

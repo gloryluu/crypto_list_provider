@@ -16,7 +16,7 @@ class _TabbarViewState extends State<TabbarView> {
   int _selectedIndex = 0;
   static List<Widget> _screens = <Widget>[
     CryptoListView(),
-    FavoriteCryptoListView(title: 'Fav List'),
+    FavoriteCryptoListView(title: 'My Favorite'),
     SettingView()
   ];
 
@@ -53,7 +53,7 @@ class _TabbarViewState extends State<TabbarView> {
                     Icons.list,
                     color: const Color(0xFFFFFFFF),
                   ),
-                  title: Text('Favourite',
+                  title: Text('Favorite',
                       style: TextStyle(
                         color: const Color(0xFFFFFFFF),
                       ))),
